@@ -25,17 +25,14 @@ Stay on time with a comprehensive clock and calendar.
 - 🌐 Supports multiple time zones
 - 📅 Integrated calendar view
 
-#### 🚀 Quick Launch (`plugin-quicklaunch`)
+#### 🚀 Quick Launch (`plugin-taskbar`)
 Launch your favorite apps instantly!
 - Drag & drop applications from the main menu to add them.
 - Organize your most-used tools for easy access.
 
-#### 🔔 Status Notifier / System Tray
-Manage your background applications and notifications. We support both modern and legacy protocols:
-- **`plugin-statusnotifier`**: Implements the modern [StatusNotifierItem (SNI)](https://www.freedesktop.org/wiki/Specifications/StatusNotifierItem) specification.
-- **`plugin-tray`**: Supports the legacy [System Tray Protocol](https://www.freedesktop.org/wiki/Specifications/systemtray-spec).
-
-> **Note:** Both plugins can run simultaneously to ensure compatibility with all your applications (Qt, GTK, etc.).
+#### 🔔 Status Notifier (`plugin-statusnotifier`)
+Manage your background applications and notifications.
+- Implements the modern [StatusNotifierItem (SNI)](https://www.freedesktop.org/wiki/Specifications/StatusNotifierItem) specification, an area where arbitrary applications can place informational icons.
 
 #### 🔊 Volume Control (`plugin-volume`)
 Easily adjust your system volume.
