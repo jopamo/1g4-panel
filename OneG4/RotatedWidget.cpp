@@ -1,3 +1,7 @@
+/* OneG4/RotatedWidget.cpp
+ * RotatedWidget class implementation
+ */
+
 #include "RotatedWidget.h"
 
 #include <QBoxLayout>

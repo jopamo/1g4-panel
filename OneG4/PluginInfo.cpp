@@ -1,3 +1,7 @@
+/* OneG4/PluginInfo.cpp
+ * PluginInfo class implementation
+ */
+
 #include "PluginInfo.h"
 
 #include <QDir>

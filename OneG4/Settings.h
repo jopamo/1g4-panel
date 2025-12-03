@@ -1,3 +1,7 @@
+/* OneG4/Settings.h
+ * Settings class header
+ */
+
 #ifndef ONEG4_SETTINGS_H
 #define ONEG4_SETTINGS_H
 

@@ -1,3 +1,7 @@
+/* OneG4/ConfigDialog.cpp
+ * ConfigDialog class implementation
+ */
+
 #include "ConfigDialog.h"
 
 #include <QDialogButtonBox>

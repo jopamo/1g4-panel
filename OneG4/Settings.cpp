@@ -1,9 +1,15 @@
+/* OneG4/Settings.cpp
+ * Settings class implementation
+ */
+
 #include "Settings.h"
 
 #include <QCoreApplication>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QFileSystemWatcher>
+#include <QIcon>
 #include <QPointer>
 #include <QStandardPaths>
 
@@ -18,11 +24,14 @@ GlobalSettings* globalSettingsInstance() {
 
 }  // namespace
 
-GlobalSettings::GlobalSettings(QObject* parent) : QObject(parent), mIconTheme(QIcon::themeName()) {}
+GlobalSettings::GlobalSettings(QObject* parent)
+    : QObject(parent),
+      mIconTheme(QIcon::themeName()) {}
 
 void GlobalSettings::setIconTheme(const QString& themeName) {
   if (mIconTheme == themeName)
     return;
+
   mIconTheme = themeName;
   emit iconThemeChanged();
   emit settingsChanged();
@@ -33,13 +42,15 @@ void GlobalSettings::notifySettingsChanged() {
 }
 
 Settings::Settings(const QString& group, QObject* parent)
-    : QSettings(QStringLiteral("oneg4"), group, parent), mWatcher(nullptr) {
+    : QSettings(QStringLiteral("oneg4"), group, parent),
+      mWatcher(nullptr) {
   ensureDefaultConfig();
   setupWatcher();
 }
 
 Settings::Settings(const QString& fileName, QSettings::Format format, QObject* parent)
-    : QSettings(fileName, format, parent), mWatcher(nullptr) {
+    : QSettings(fileName, format, parent),
+      mWatcher(nullptr) {
   ensureDefaultConfig();
   setupWatcher();
 }
@@ -55,6 +66,7 @@ void Settings::setupWatcher() {
 
   mWatcher = new QFileSystemWatcher(this);
   mWatcher->addPath(cfg);
+
   connect(mWatcher, &QFileSystemWatcher::fileChanged, this, [this, cfg](const QString&) {
     if (QFile::exists(cfg) && !mWatcher->files().contains(cfg))
       mWatcher->addPath(cfg);
@@ -73,8 +85,9 @@ void Settings::ensureDefaultConfig() {
 
   const QString writable = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation);
   QString relativePath = target.fileName();
+
   if (!writable.isEmpty()) {
-    QDir writableDir(writable);
+    const QDir writableDir(writable);
     const QString prefix = writableDir.absolutePath() + QLatin1Char('/');
     if (cfg.startsWith(prefix))
       relativePath = cfg.mid(prefix.size());
@@ -84,6 +97,7 @@ void Settings::ensureDefaultConfig() {
   for (const QString& dir : configDirs) {
     if (dir.isEmpty())
       continue;
+
     if (!writable.isEmpty() && QFileInfo(dir) == QFileInfo(writable))
       continue;
 
@@ -92,8 +106,10 @@ void Settings::ensureDefaultConfig() {
       continue;
 
     QDir().mkpath(target.absolutePath());
+
     if (!QFile::copy(candidate, cfg))
       break;
+
     QFile::setPermissions(cfg, QFile::permissions(cfg) | QFile::ReadUser | QFile::WriteUser);
     break;
   }

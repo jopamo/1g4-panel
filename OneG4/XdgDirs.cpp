@@ -1,3 +1,7 @@
+/* OneG4/XdgDirs.cpp
+ * XdgDirs namespace implementation
+ */
+
 #include "XdgDirs.h"
 
 #include <QDir>

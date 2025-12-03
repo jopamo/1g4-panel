@@ -1,3 +1,7 @@
+/* OneG4/Notification.cpp
+ * Notification class implementation
+ */
+
 #include "Notification.h"
 
 #include <QGuiApplication>

@@ -1,3 +1,7 @@
+/* OneG4/Globals.h
+ * Global constants and macros
+ */
+
 #ifndef ONEG4_GLOBALS_H
 #define ONEG4_GLOBALS_H
 

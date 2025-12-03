@@ -1,3 +1,7 @@
+/* OneG4/Notification.h
+ * Notification class header
+ */
+
 #ifndef ONEG4_NOTIFICATION_H
 #define ONEG4_NOTIFICATION_H
 

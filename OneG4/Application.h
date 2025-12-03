@@ -1,3 +1,7 @@
+/* OneG4/Application.h
+ * Application class header
+ */
+
 #ifndef ONEG4_APPLICATION_H
 #define ONEG4_APPLICATION_H
 

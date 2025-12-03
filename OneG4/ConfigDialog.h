@@ -1,3 +1,7 @@
+/* OneG4/ConfigDialog.h
+ * ConfigDialog class header
+ */
+
 #ifndef ONEG4_CONFIG_DIALOG_H
 #define ONEG4_CONFIG_DIALOG_H
 

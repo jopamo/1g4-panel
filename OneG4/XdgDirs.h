@@ -1,3 +1,7 @@
+/* OneG4/XdgDirs.h
+ * XdgDirs namespace header
+ */
+
 #ifndef XDGDIRS_WRAPPER_H
 #define XDGDIRS_WRAPPER_H
 

@@ -1,3 +1,7 @@
+/* OneG4/RotatedWidget.h
+ * RotatedWidget class header
+ */
+
 #ifndef ONEG4_ROTATED_WIDGET_H
 #define ONEG4_ROTATED_WIDGET_H
 

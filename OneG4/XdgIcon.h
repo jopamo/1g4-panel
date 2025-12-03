@@ -1,3 +1,7 @@
+/* OneG4/XdgIcon.h
+ * XdgIcon namespace header
+ */
+
 #ifndef XDGICON_WRAPPER_H
 #define XDGICON_WRAPPER_H
 

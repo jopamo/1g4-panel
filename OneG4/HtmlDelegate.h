@@ -1,3 +1,7 @@
+/* OneG4/HtmlDelegate.h
+ * HtmlDelegate class header
+ */
+
 #ifndef ONEG4_HTML_DELEGATE_H
 #define ONEG4_HTML_DELEGATE_H
 

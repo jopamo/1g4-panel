@@ -1,3 +1,7 @@
+/* OneG4/XdgIcon.cpp
+ * XdgIcon namespace implementation
+ */
+
 #include "XdgIcon.h"
 
 #include <QApplication>

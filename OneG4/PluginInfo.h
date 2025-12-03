@@ -1,3 +1,7 @@
+/* OneG4/PluginInfo.h
+ * PluginInfo class header
+ */
+
 #ifndef ONEG4_PLUGIN_INFO_H
 #define ONEG4_PLUGIN_INFO_H
 

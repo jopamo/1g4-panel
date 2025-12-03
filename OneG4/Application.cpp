@@ -1,3 +1,7 @@
+/* OneG4/Application.cpp
+ * Application class implementation
+ */
+
 #include "Application.h"
 
 #include <QEvent>

@@ -1,3 +1,7 @@
+/* OneG4/HtmlDelegate.cpp
+ * HtmlDelegate class implementation
+ */
+
 #include "HtmlDelegate.h"
 
 #include <QApplication>

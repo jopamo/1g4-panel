@@ -1,3 +1,7 @@
+/* OneG4/GridLayout.h
+ * GridLayout class header
+ */
+
 #ifndef ONEG4_GRID_LAYOUT_H
 #define ONEG4_GRID_LAYOUT_H
 
