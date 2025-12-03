@@ -4,8 +4,11 @@
 
 #include "oneg4worldclock.h"
 
-#include <OneG4/Globals>
+#include <OneG4/Globals.h>
 
+#ifndef QL1S
+#define QL1S(str) QLatin1String(str)
+#endif
 #include <QCalendarWidget>
 #include <QDate>
 #include <QDialog>
@@ -309,7 +312,7 @@ void OneG4WorldClock::settingsChanged() {
     realign();
   }
 
-  bool showWeekNumber = settings()->value(QL1S("showWeekNumber"), true).toBool();
+  bool showWeekNumber = settings()->value(QLatin1String("showWeekNumber"), true).toBool();
   if (showWeekNumber != mShowWeekNumber) {
     mShowWeekNumber = showWeekNumber;
   }
