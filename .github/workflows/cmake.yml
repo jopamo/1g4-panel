@@ -32,9 +32,7 @@ jobs:
           pipewire-devel \
           pkgconf-pkg-config
 
-    # Note: 'oneg4' package is required but not available in standard repos.
-    # In a real environment, you would install it from a custom repo or build it here.
-    # For now, we proceed with the configuration attempt.
+
 
     - name: Configure CMake
       run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
