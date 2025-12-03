@@ -30,6 +30,9 @@ jobs:
           libX11-devel \
           libxcb-devel \
           pipewire-devel \
+          glib2-devel \
+          pulseaudio-libs-devel \
+          alsa-lib-devel \
           pkgconf-pkg-config
 
 
