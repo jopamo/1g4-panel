@@ -4,29 +4,38 @@
 
 #include "spacer.h"
 #include "spacerconfiguration.h"
-#include <QApplication>
 
-void SpacerWidget::setType(QString const& type) {
-  if (type != mType) {
-    mType = type;
-    QEvent e{QEvent::ThemeChange};
-    QApplication::sendEvent(this, &e);
-  }
+#include <QApplication>
+#include <QDialog>
+#include <QEvent>
+#include <QSizePolicy>
+
+void SpacerWidget::setType(const QString& type) {
+  if (type == mType)
+    return;
+
+  mType = type;
+  QEvent e(QEvent::ThemeChange);
+  QApplication::sendEvent(this, &e);
 }
 
-void SpacerWidget::setOrientation(QString const& orientation) {
-  if (orientation != mOrientation) {
-    mOrientation = orientation;
-    QEvent e{QEvent::ThemeChange};
-    QApplication::sendEvent(this, &e);
-  }
+void SpacerWidget::setOrientation(const QString& orientation) {
+  if (orientation == mOrientation)
+    return;
+
+  mOrientation = orientation;
+  QEvent e(QEvent::ThemeChange);
+  QApplication::sendEvent(this, &e);
 }
 
 /************************************************
 
  ************************************************/
 Spacer::Spacer(const IOneG4PanelPluginStartupInfo& startupInfo)
-    : QObject(), IOneG4PanelPlugin(startupInfo), mSize(8), mExpandable(false) {
+    : QObject(),
+      IOneG4PanelPlugin(startupInfo),
+      mSize(8),
+      mExpandable(false) {
   settingsChanged();
 }
 
@@ -35,11 +44,16 @@ Spacer::Spacer(const IOneG4PanelPluginStartupInfo& startupInfo)
  ************************************************/
 void Spacer::settingsChanged() {
   mSize = settings()->value(QStringLiteral("size"), 8).toInt();
-  const bool old_expandable = mExpandable;
+  const bool oldExpandable = mExpandable;
   mExpandable = settings()->value(QStringLiteral("expandable"), false).toBool();
-  mSpacer.setType(settings()->value(QStringLiteral("spaceType"), SpacerConfiguration::msTypes[0]).toString());
+
+  mSpacer.setType(settings()
+                      ->value(QStringLiteral("spaceType"), SpacerConfiguration::msTypes[0])
+                      .toString());
+
   setSizes();
-  if (old_expandable != mExpandable)
+
+  if (oldExpandable != mExpandable)
     pluginFlagsChanged();
 }
 
@@ -56,9 +70,10 @@ QDialog* Spacer::configureDialog() {
 void Spacer::setSizes() {
   if (mExpandable) {
     mSpacer.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    mSpacer.setMinimumSize({1, 1});
-    mSpacer.setMaximumSize({QWIDGETSIZE_MAX, QWIDGETSIZE_MAX});
-    mSpacer.setOrientation(panel()->isHorizontal() ? QStringLiteral("horizontal") : QStringLiteral("vertical"));
+    mSpacer.setMinimumSize(1, 1);
+    mSpacer.setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+    mSpacer.setOrientation(panel()->isHorizontal() ? QStringLiteral("horizontal")
+                                                   : QStringLiteral("vertical"));
   }
   else {
     if (panel()->isHorizontal()) {
