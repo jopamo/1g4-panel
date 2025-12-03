@@ -42,7 +42,8 @@ class Settings : public QSettings {
   void settingsChangedFromExternal();
 
  private:
-  void setupWatcher();
+ void setupWatcher();
+  void ensureDefaultConfig();
 
   QFileSystemWatcher* mWatcher;
 };

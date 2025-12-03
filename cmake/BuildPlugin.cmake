@@ -10,10 +10,13 @@ file (GLOB ${PROJECT_NAME}_DESKTOP_FILES_IN resources/*.desktop.in)
 set(DESKTOP_FILES)
 foreach(_desktop_in ${${PROJECT_NAME}_DESKTOP_FILES_IN})
         get_filename_component(_desktop_name ${_desktop_in} NAME_WE)
-        set(_desktop "${CMAKE_CURRENT_BINARY_DIR}/${_desktop_name}")
+        set(_desktop "${CMAKE_CURRENT_BINARY_DIR}/${_desktop_name}.desktop")
         configure_file(${_desktop_in} ${_desktop} COPYONLY)
         list(APPEND DESKTOP_FILES ${_desktop})
 endforeach()
+
+file (GLOB ${PROJECT_NAME}_DESKTOP_FILES resources/*.desktop)
+list(APPEND DESKTOP_FILES ${${PROJECT_NAME}_DESKTOP_FILES})
     #************************************************
 
     file (GLOB CONFIG_FILES resources/*.conf)

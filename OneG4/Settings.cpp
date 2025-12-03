@@ -3,7 +3,9 @@
 #include <QCoreApplication>
 #include <QDir>
 #include <QFile>
+#include <QFileInfo>
 #include <QPointer>
+#include <QStandardPaths>
 
 namespace OneG4 {
 
@@ -30,11 +32,15 @@ void GlobalSettings::notifySettingsChanged() {
   emit settingsChanged();
 }
 
-Settings::Settings(const QString& group, QObject* parent) : QSettings(QStringLiteral("oneg4"), group, parent), mWatcher(nullptr) {
+Settings::Settings(const QString& group, QObject* parent)
+    : QSettings(QStringLiteral("oneg4"), group, parent), mWatcher(nullptr) {
+  ensureDefaultConfig();
   setupWatcher();
 }
 
-Settings::Settings(const QString& fileName, QSettings::Format format, QObject* parent) : QSettings(fileName, format, parent), mWatcher(nullptr) {
+Settings::Settings(const QString& fileName, QSettings::Format format, QObject* parent)
+    : QSettings(fileName, format, parent), mWatcher(nullptr) {
+  ensureDefaultConfig();
   setupWatcher();
 }
 
@@ -54,6 +60,43 @@ void Settings::setupWatcher() {
       mWatcher->addPath(cfg);
     emit settingsChangedFromExternal();
   });
+}
+
+void Settings::ensureDefaultConfig() {
+  const QString cfg = fileName();
+  if (cfg.isEmpty())
+    return;
+
+  const QFileInfo target(cfg);
+  if (target.exists())
+    return;
+
+  const QString writable = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation);
+  QString relativePath = target.fileName();
+  if (!writable.isEmpty()) {
+    QDir writableDir(writable);
+    const QString prefix = writableDir.absolutePath() + QLatin1Char('/');
+    if (cfg.startsWith(prefix))
+      relativePath = cfg.mid(prefix.size());
+  }
+
+  const QStringList configDirs = QStandardPaths::standardLocations(QStandardPaths::GenericConfigLocation);
+  for (const QString& dir : configDirs) {
+    if (dir.isEmpty())
+      continue;
+    if (!writable.isEmpty() && QFileInfo(dir) == QFileInfo(writable))
+      continue;
+
+    const QString candidate = QDir(dir).filePath(relativePath);
+    if (!QFile::exists(candidate))
+      continue;
+
+    QDir().mkpath(target.absolutePath());
+    if (!QFile::copy(candidate, cfg))
+      break;
+    QFile::setPermissions(cfg, QFile::permissions(cfg) | QFile::ReadUser | QFile::WriteUser);
+    break;
+  }
 }
 
 SettingsCache::SettingsCache(QSettings* settings) {
