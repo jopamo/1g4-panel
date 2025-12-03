@@ -10,7 +10,7 @@
 // #include <dbusmenu-oneg4/dbusmenuimporter.h> // Removed dependency
 #include "../panel/ioneg4panelplugin.h"
 #include "sniasync.h"
-#include <XdgIcon.h>
+#include <OneG4/XdgIcon.h>
 
 namespace {
 /*! \brief Stub for DBusMenuImporter to remove external dependency.

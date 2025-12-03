@@ -26,7 +26,7 @@
 #include <memory>
 
 #include <OneG4/Settings.h>
-#include <XdgIcon.h>
+#include <OneG4/XdgIcon.h>
 
 // statically linked built-in plugins
 #if defined(WITH_DESKTOPSWITCH_PLUGIN)

@@ -25,8 +25,8 @@
 #include <QCoreApplication>
 #include <QDir>
 #include <QPainter>
-#include <XdgIcon.h>
-#include <XdgDirs.h>
+#include <OneG4/XdgIcon.h>
+#include <OneG4/XdgDirs.h>
 
 #include <KWindowSystem>
 #include <KX11Extras>

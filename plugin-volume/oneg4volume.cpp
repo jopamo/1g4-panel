@@ -21,7 +21,7 @@
 #include <QDialog>
 #include <QMessageBox>
 #include <QtGlobal>
-#include <XdgIcon.h>
+#include <OneG4/XdgIcon.h>
 
 #include <algorithm>
 

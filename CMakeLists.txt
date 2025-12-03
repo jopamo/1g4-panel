@@ -17,6 +17,8 @@ macro(setByDefault VAR_NAME VAR_VALUE)
   endif(NOT DEFINED ${VAR_NAME})
 endmacro()
 
+setByDefault(ONEG4_ETC_XDG_DIR "${CMAKE_INSTALL_FULL_SYSCONFDIR}/xdg")
+
 include(GNUInstallDirs)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -43,8 +45,8 @@ set(ONEG4_COMPAT_SOURCES
     OneG4/PluginInfo.cpp
     OneG4/RotatedWidget.cpp
     OneG4/Settings.cpp
-    XdgIcon.cpp
-    XdgDirs.cpp
+    OneG4/XdgIcon.cpp
+    OneG4/XdgDirs.cpp
 )
 
 set(ONEG4_COMPAT_HEADERS
@@ -57,8 +59,8 @@ set(ONEG4_COMPAT_HEADERS
     OneG4/RotatedWidget.h
     OneG4/Settings.h
     OneG4/Globals.h
-    XdgIcon.h
-    XdgDirs.h
+    OneG4/XdgIcon.h
+    OneG4/XdgDirs.h
 )
 
 add_library(oneg4-compat SHARED
