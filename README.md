@@ -40,6 +40,8 @@ As indicated by the name, a volume control. Technically Alsa, OSS and PulseAudio
 
 ### Compiling source code
 
+Please refer to the generic compilation instructions for OneG4 components.
+
 
 ### Binary packages
 
