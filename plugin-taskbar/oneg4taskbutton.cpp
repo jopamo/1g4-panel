@@ -10,7 +10,7 @@
 #include <OneG4/Settings.h>
 
 #include <QDebug>
-#include <XdgIcon.h>
+#include <OneG4/XdgIcon.h>
 #include <QTimer>
 #include <QMenu>
 #include <QAction>

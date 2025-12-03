@@ -9,8 +9,8 @@
 #include "../oneg4panelapplication.h"
 
 #include <OneG4/HtmlDelegate.h>
-#include <XdgIcon.h>
-#include <XdgDirs.h>
+#include <OneG4/XdgIcon.h>
+#include <OneG4/XdgDirs.h>
 
 #include <QString>
 #include <QLineEdit>
