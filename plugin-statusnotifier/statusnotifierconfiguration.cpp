@@ -4,17 +4,28 @@
 
 #include "statusnotifierconfiguration.h"
 #include "ui_statusnotifierconfiguration.h"
-#include <QPushButton>
+
+#include <QAbstractButton>
+#include <QAbstractSpinBox>
+#include <QCheckBox>
 #include <QComboBox>
+#include <QDialogButtonBox>
+#include <QHeaderView>
+#include <QPushButton>
+#include <QTableWidget>
+#include <QTableWidgetItem>
 
 StatusNotifierConfiguration::StatusNotifierConfiguration(PluginSettings* settings, QWidget* parent)
-    : OneG4PanelPluginConfigDialog(settings, parent), ui(new Ui::StatusNotifierConfiguration) {
+    : OneG4PanelPluginConfigDialog(settings, parent),
+      ui(new Ui::StatusNotifierConfiguration) {
   setAttribute(Qt::WA_DeleteOnClose);
   setObjectName(QStringLiteral("StatusNotifierConfigurationWindow"));
+
   ui->setupUi(this);
 
   if (QPushButton* closeBtn = ui->buttons->button(QDialogButtonBox::Close))
     closeBtn->setDefault(true);
+
   connect(ui->buttons, &QDialogButtonBox::clicked, this, &StatusNotifierConfiguration::dialogButtonsAction);
 
   ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -46,64 +57,77 @@ void StatusNotifierConfiguration::saveSettings() {
 }
 
 void StatusNotifierConfiguration::addItems(const QStringList& items) {
+  ui->tableWidget->clearContents();
   ui->tableWidget->setRowCount(items.size());
   ui->tableWidget->setSortingEnabled(false);
-  int index = 0;
-  for (const auto& item : items) {
-    // first column
-    QTableWidgetItem* widgetItem = new QTableWidgetItem(item);
+
+  int row = 0;
+  for (const QString& item : items) {
+    auto* widgetItem = new QTableWidgetItem(item);
     widgetItem->setFlags(widgetItem->flags() & ~Qt::ItemIsEditable & ~Qt::ItemIsSelectable);
-    ui->tableWidget->setItem(index, 0, widgetItem);
-    // second column
-    QComboBox* cb = new QComboBox();
+    ui->tableWidget->setItem(row, 0, widgetItem);
+
+    auto* cb = new QComboBox(ui->tableWidget);
     cb->addItems(QStringList() << tr("Always show") << tr("Auto-hide") << tr("Always hide"));
+
     if (mAutoHideList.contains(item))
       cb->setCurrentIndex(1);
     else if (mHideList.contains(item))
       cb->setCurrentIndex(2);
-    connect(cb, &QComboBox::currentIndexChanged, this, [this, item](int indx) {
-      if (indx == 0) {
-        mAutoHideList.removeAll(item);
-        mHideList.removeAll(item);
-      }
-      else if (indx == 1) {
-        mHideList.removeAll(item);
-        if (!mAutoHideList.contains(item))
-          mAutoHideList << item;
-      }
-      else if (indx == 2) {
-        mAutoHideList.removeAll(item);
-        if (!mHideList.contains(item))
-          mHideList << item;
+    else
+      cb->setCurrentIndex(0);
+
+    connect(cb, &QComboBox::currentIndexChanged, this, [this, item](int index) {
+      switch (index) {
+        case 0:
+          mAutoHideList.removeAll(item);
+          mHideList.removeAll(item);
+          break;
+        case 1:
+          mHideList.removeAll(item);
+          if (!mAutoHideList.contains(item))
+            mAutoHideList << item;
+          break;
+        case 2:
+          mAutoHideList.removeAll(item);
+          if (!mHideList.contains(item))
+            mHideList << item;
+          break;
       }
       saveSettings();
     });
-    ui->tableWidget->setCellWidget(index, 1, cb);
-    ++index;
+
+    ui->tableWidget->setCellWidget(row, 1, cb);
+    ++row;
   }
+
   ui->tableWidget->setSortingEnabled(true);
   ui->tableWidget->horizontalHeader()->setSortIndicatorShown(false);
-  ui->tableWidget->setCurrentCell(0, 1);
+  if (ui->tableWidget->rowCount() > 0)
+    ui->tableWidget->setCurrentCell(0, 1);
 }
 
 void StatusNotifierConfiguration::dialogButtonsAction(QAbstractButton* btn) {
   OneG4PanelPluginConfigDialog::dialogButtonsAction(btn);
-  // also, apply the changes to the visibilities list if the Reset button is clicked
-  QDialogButtonBox* box = qobject_cast<QDialogButtonBox*>(btn->parent());
-  if (box && box->buttonRole(btn) == QDialogButtonBox::ResetRole) {
-    for (int i = 0; i < ui->tableWidget->rowCount(); ++i) {
-      if (auto cb = qobject_cast<QComboBox*>(ui->tableWidget->cellWidget(i, 1))) {
-        if (QTableWidgetItem* widgetItem = ui->tableWidget->item(i, 0)) {
-          cb->blockSignals(true);  // we neither change visibility lists nor save settings here
-          if (mAutoHideList.contains(widgetItem->text()))
-            cb->setCurrentIndex(1);
-          else if (mHideList.contains(widgetItem->text()))
-            cb->setCurrentIndex(2);
-          else
-            cb->setCurrentIndex(0);
-          cb->blockSignals(false);
-        }
-      }
-    }
+
+  auto* box = qobject_cast<QDialogButtonBox*>(btn->parent());
+  if (!box || box->buttonRole(btn) != QDialogButtonBox::ResetRole)
+    return;
+
+  for (int i = 0; i < ui->tableWidget->rowCount(); ++i) {
+    auto* cb = qobject_cast<QComboBox*>(ui->tableWidget->cellWidget(i, 1));
+    QTableWidgetItem* widgetItem = ui->tableWidget->item(i, 0);
+    if (!cb || !widgetItem)
+      continue;
+
+    const QString name = widgetItem->text();
+    cb->blockSignals(true);
+    if (mAutoHideList.contains(name))
+      cb->setCurrentIndex(1);
+    else if (mHideList.contains(name))
+      cb->setCurrentIndex(2);
+    else
+      cb->setCurrentIndex(0);
+    cb->blockSignals(false);
   }
 }
