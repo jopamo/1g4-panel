@@ -6,21 +6,27 @@
 
 #include <QDir>
 #include <QFile>
-#include <dbusmenu-oneg4/dbusmenuimporter.h>
+#include <QMenu>
+// #include <dbusmenu-oneg4/dbusmenuimporter.h> // Removed dependency
 #include "../panel/ioneg4panelplugin.h"
 #include "sniasync.h"
 #include <XdgIcon>
 
 namespace {
-/*! \brief specialized DBusMenuImporter to correctly create actions' icons based
- * on name
+/*! \brief Stub for DBusMenuImporter to remove external dependency.
  */
-class MenuImporter : public DBusMenuImporter {
+class MenuImporter : public QObject {
  public:
-  using DBusMenuImporter::DBusMenuImporter;
+  MenuImporter(const QString&, const QString&, QObject* parent) : QObject(parent) {
+      m_menu = new QMenu();
+      m_menu->addAction(tr("Menu not available (Stub)"));
+      m_menu->setParent(this);
+  }
 
- protected:
-  QIcon iconForName(const QString& name) override { return XdgIcon::fromTheme(name); }
+  QMenu* menu() { return m_menu; }
+
+ private:
+  QMenu* m_menu;
 };
 }  // namespace
 

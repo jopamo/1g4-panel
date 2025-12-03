@@ -1,7 +1,7 @@
 set(PLUGIN "statusnotifier")
 
 
-find_package(dbusmenu-oneg4 REQUIRED)
+
 find_package(Qt6 ${REQUIRED_QT_VERSION} REQUIRED COMPONENTS Concurrent)
 
 set(HEADERS
@@ -43,7 +43,6 @@ set_source_files_properties(${DBUS_SOURCES} PROPERTIES SKIP_AUTOGEN ON)
 list(APPEND SOURCES "${DBUS_SOURCES}")
 
 set(LIBRARIES
-    dbusmenu-oneg4
     Qt6::Concurrent
 )
 
