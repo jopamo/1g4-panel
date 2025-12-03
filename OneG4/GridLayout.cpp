@@ -1,20 +1,28 @@
+/* OneG4/GridLayout.cpp
+ * GridLayout class implementation
+ */
+
 #include "GridLayout.h"
 
+#include <QSizePolicy>
 #include <QStyle>
-#include <QWidgetItem>
 #include <QWidget>
+#include <QWidgetItem>
 
 namespace {
 
 int effectiveSpacing(const QLayout* layout, Qt::Orientation orientation) {
   if (!layout)
     return 0;
-  int spacing = layout->spacing();
+
+  const int spacing = layout->spacing();
   if (spacing >= 0)
     return spacing;
+
   QWidget* parentWidget = layout->parentWidget();
   if (!parentWidget)
     return 0;
+
   QStyle* style = parentWidget->style();
   return style->layoutSpacing(QSizePolicy::PushButton, QSizePolicy::PushButton, orientation, nullptr, parentWidget);
 }
@@ -61,24 +69,34 @@ QLayoutItem* GridLayout::itemAt(int index) const {
 QLayoutItem* GridLayout::takeAt(int index) {
   if (index < 0 || index >= mItems.count())
     return nullptr;
+
   QLayoutItem* item = mItems.takeAt(index);
   invalidate();
   return item;
 }
 
 QSize GridLayout::sizeHint() const {
-  int w = 0;
-  int h = 0;
+  int cellW = 0;
+  int cellH = 0;
+
   for (QLayoutItem* item : mItems) {
     const QSize hint = item->sizeHint();
-    w = qMax(w, hint.width());
-    h = qMax(h, hint.height());
+    cellW = qMax(cellW, hint.width());
+    cellH = qMax(cellH, hint.height());
   }
-  const int rows = qMax(1, mRowCount > 0 ? mRowCount : ((mItems.count() + qMax(1, mColumnCount) - 1) / qMax(1, mColumnCount)));
-  const int columns = qMax(1, mColumnCount > 0 ? mColumnCount : ((mItems.count() + rows - 1) / rows));
+
+  const int itemCount = mItems.count();
+  const int rows = qMax(1, mRowCount > 0 ? mRowCount
+                                         : ((itemCount + qMax(1, mColumnCount) - 1) / qMax(1, mColumnCount)));
+  const int columns = qMax(1, mColumnCount > 0 ? mColumnCount : ((itemCount + rows - 1) / rows));
+
   const int spacingX = effectiveSpacing(this, Qt::Horizontal);
   const int spacingY = effectiveSpacing(this, Qt::Vertical);
-  return QSize(columns * w + (columns - 1) * spacingX, rows * h + (rows - 1) * spacingY);
+
+  const int totalW = columns * cellW + (columns - 1) * spacingX;
+  const int totalH = rows * cellH + (rows - 1) * spacingY;
+
+  return QSize(totalW, totalH);
 }
 
 QSize GridLayout::minimumSize() const {
@@ -88,6 +106,7 @@ QSize GridLayout::minimumSize() const {
 static QVector<int> orderedIndices(int count, OneG4::GridLayout::ItemsOrder order) {
   QVector<int> indexes;
   indexes.reserve(count);
+
   if (order == OneG4::GridLayout::FirstToLast) {
     for (int i = 0; i < count; ++i)
       indexes.append(i);
@@ -96,11 +115,13 @@ static QVector<int> orderedIndices(int count, OneG4::GridLayout::ItemsOrder orde
     for (int i = count - 1; i >= 0; --i)
       indexes.append(i);
   }
+
   return indexes;
 }
 
 void GridLayout::setGeometry(const QRect& rect) {
   QLayout::setGeometry(rect);
+
   if (mItems.isEmpty())
     return;
 
@@ -109,6 +130,7 @@ void GridLayout::setGeometry(const QRect& rect) {
 
   int rows = mRowCount;
   int columns = mColumnCount;
+
   if (verticalFlow) {
     if (columns <= 0)
       columns = qMax(1, rows > 0 ? rows : 1);
@@ -129,56 +151,76 @@ void GridLayout::setGeometry(const QRect& rect) {
   const int totalSpacingX = spacingX * qMax(0, columns - 1);
   const int totalSpacingY = spacingY * qMax(0, rows - 1);
 
-  const int cellWidth = qBound(cellMin.width(), (rect.width() - totalSpacingX) / columns, cellMax.width());
-  const int cellHeight = qBound(cellMin.height(), (rect.height() - totalSpacingY) / rows, cellMax.height());
+  const int rawCellWidth = columns > 0 ? (rect.width() - totalSpacingX) / columns : 0;
+  const int rawCellHeight = rows > 0 ? (rect.height() - totalSpacingY) / rows : 0;
+
+  const int cellWidth = qBound(cellMin.width(), rawCellWidth, cellMax.width());
+  const int cellHeight = qBound(cellMin.height(), rawCellHeight, cellMax.height());
+
+  if (cellWidth <= 0 || cellHeight <= 0)
+    return;
 
   for (int i = 0; i < indexes.size(); ++i) {
     const int logicalIndex = indexes.at(i);
     const int row = i / columns;
     const int column = i % columns;
-    QRect cell(rect.x() + column * (cellWidth + spacingX), rect.y() + row * (cellHeight + spacingY), cellWidth,
+
+    QRect cell(rect.x() + column * (cellWidth + spacingX),
+               rect.y() + row * (cellHeight + spacingY),
+               cellWidth,
                cellHeight);
-    mItems.at(logicalIndex)->setGeometry(cell);
+
+    if (QLayoutItem* item = mItems.at(logicalIndex))
+      item->setGeometry(cell);
   }
 }
 
 int GridLayout::indexOf(const QWidget* widget) const {
   if (!widget)
     return -1;
-  for (int i = 0; i < mItems.count(); ++i)
+
+  for (int i = 0; i < mItems.count(); ++i) {
     if (mItems.at(i)->widget() == widget)
       return i;
+  }
+
   return -1;
 }
 
 int GridLayout::indexOf(const QLayoutItem* item) const {
   if (!item)
     return -1;
-  for (int i = 0; i < mItems.count(); ++i)
+
+  for (int i = 0; i < mItems.count(); ++i) {
     if (mItems.at(i) == item)
       return i;
+  }
+
   return -1;
 }
 
 QRect GridLayout::occupiedGeometry() const {
   QRect area;
+
   for (QLayoutItem* item : mItems) {
     if (item->widget() && item->widget()->isVisible())
       area = area.united(item->geometry());
   }
+
   if (area.isNull())
     area = geometry();
+
   return area;
 }
 
 void GridLayout::setStretch(StretchFlags stretch) {
   mStretch = stretch;
-  Q_UNUSED(mStretch);
 }
 
 void GridLayout::setDirection(Direction direction) {
   if (mDirection == direction)
     return;
+
   mDirection = direction;
   invalidate();
 }
@@ -186,6 +228,7 @@ void GridLayout::setDirection(Direction direction) {
 void GridLayout::setItemsOrder(ItemsOrder order) {
   if (mOrder == order)
     return;
+
   mOrder = order;
   invalidate();
 }
@@ -193,6 +236,7 @@ void GridLayout::setItemsOrder(ItemsOrder order) {
 void GridLayout::setRowCount(int rows) {
   if (mRowCount == rows)
     return;
+
   mRowCount = rows;
   invalidate();
 }
@@ -200,6 +244,7 @@ void GridLayout::setRowCount(int rows) {
 void GridLayout::setColumnCount(int columns) {
   if (mColumnCount == columns)
     return;
+
   mColumnCount = columns;
   invalidate();
 }
@@ -217,6 +262,7 @@ void GridLayout::setCellMaximumSize(const QSize& size) {
 void GridLayout::moveItem(int from, int to, bool) {
   if (from < 0 || to < 0 || from >= mItems.count() || to >= mItems.count() || from == to)
     return;
+
   mItems.move(from, to);
   invalidate();
 }
