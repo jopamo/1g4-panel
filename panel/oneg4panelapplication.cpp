@@ -151,9 +151,9 @@ OneG4PanelApplication::OneG4PanelApplication(int& argc, char** argv)
   Q_D(OneG4PanelApplication);
 
   QCoreApplication::setApplicationName(QLatin1String("1g4-panel"));
-  const QString VERINFO = QStringLiteral("%1\nliboneg4   %2\nQt        %3")
-                              .arg(QLatin1String(ONEG4_PANEL_VERSION), QLatin1String(ONEG4_VERSION),
-                                   QLatin1String(QT_VERSION_STR));
+  const QString compatVersion = QStringLiteral("%1.%2").arg(OneG4::VersionMajor).arg(OneG4::VersionMinor);
+  const QString VERINFO =
+      QStringLiteral(ONEG4_PANEL_VERSION "\ncompat   %1\nQt        " QT_VERSION_STR).arg(compatVersion);
 
   QCoreApplication::setApplicationVersion(VERINFO);
 

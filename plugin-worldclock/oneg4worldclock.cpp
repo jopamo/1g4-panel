@@ -312,7 +312,7 @@ void OneG4WorldClock::settingsChanged() {
     realign();
   }
 
-  bool showWeekNumber = settings()->value(QL1S("showWeekNumber"), true).toBool();
+  bool showWeekNumber = settings()->value(QLatin1String("showWeekNumber"), true).toBool();
   if (showWeekNumber != mShowWeekNumber) {
     mShowWeekNumber = showWeekNumber;
   }

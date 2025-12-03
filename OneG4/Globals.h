@@ -7,5 +7,4 @@ inline constexpr int VersionMinor = 0;
 }
 
 #define ONEG4_VERSION "1.0.0"
-
 #endif  // ONEG4_GLOBALS_H

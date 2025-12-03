@@ -7,6 +7,7 @@
 
 #include <QFrame>
 #include <QString>
+#include <QStringList>
 #include <QTimer>
 #include <QPropertyAnimation>
 #include <QPointer>
@@ -26,6 +27,8 @@ class OneG4PanelLayout;
 class ConfigPanelDialog;
 class PanelPluginsModel;
 class WindowNotifier;
+
+QStringList pluginDesktopDirs();
 
 /*! \brief The OneG4Panel class provides a single 1g4-panel. All OneG4Panel
  * instances should be created and handled by OneG4PanelApplication. In turn,
