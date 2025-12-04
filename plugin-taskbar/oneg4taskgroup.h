@@ -38,6 +38,8 @@ class OneG4TaskGroup : public OneG4TaskButton {
   void setAutoRotation(bool value, IOneG4Panel::Position position);
   Qt::ToolButtonStyle popupButtonStyle() const;
   void setToolButtonsStyle(Qt::ToolButtonStyle style);
+  void setButtonOpacity(qreal opacity);
+  void setPopupOpacity(qreal opacity);
 
   void setPopupVisible(bool visible = true, bool fast = false);
 
@@ -83,6 +85,8 @@ class OneG4TaskGroup : public OneG4TaskButton {
   bool mPreventPopup;
   bool mSingleButton;  //!< flag if this group should act as a "standard" button (no grouping or only one "shown" window
                        //!< in group)
+  qreal mButtonOpacity = 1.0;
+  qreal mPopupOpacity = 1.0;
 
   QSize recalculateFrameSize();
   QPoint recalculateFramePosition();

@@ -16,6 +16,7 @@
 #include <QMenu>
 #include <QEnterEvent>
 #include <OneG4/XdgIcon.h>
+#include <algorithm>
 
 #include "../panel/backends/ioneg4abstractwmiface.h"
 
@@ -32,6 +33,8 @@ OneG4TaskGroup::OneG4TaskGroup(const QString& groupName, WId window, OneG4TaskBa
 
   setObjectName(groupName);
   setTextExplicitly(groupName);
+  setButtonOpacity(parent->buttonOpacity());
+  setPopupOpacity(parent->groupPopupOpacity());
 
   connect(this, &OneG4TaskGroup::clicked, this, &OneG4TaskGroup::onClicked);
   connect(parent, &OneG4TaskBar::buttonRotationRefreshed, this, &OneG4TaskGroup::setAutoRotation);
@@ -82,6 +85,7 @@ OneG4TaskButton* OneG4TaskGroup::addWindow(WId id) {
 
   OneG4TaskButton* btn = new OneG4TaskButton(id, parentTaskBar(), mPopup);
   btn->setToolButtonStyle(popupButtonStyle());
+  btn->setOpacity(mButtonOpacity);
 
   if (btn->isApplicationActive()) {
     btn->setChecked(true);
@@ -223,6 +227,24 @@ void OneG4TaskGroup::setToolButtonsStyle(Qt::ToolButtonStyle style) {
   for (auto button : mButtonHash) {
     button->setToolButtonStyle(styleInPopup);
   }
+}
+
+/************************************************
+ *
+ ************************************************/
+void OneG4TaskGroup::setButtonOpacity(qreal opacity) {
+  mButtonOpacity = std::clamp(opacity, 0.0, 1.0);
+  OneG4TaskButton::setOpacity(mButtonOpacity);
+  for (OneG4TaskButton* button : std::as_const(mButtonHash))
+    button->setOpacity(mButtonOpacity);
+}
+
+/************************************************
+ *
+ ************************************************/
+void OneG4TaskGroup::setPopupOpacity(qreal opacity) {
+  mPopupOpacity = std::clamp(opacity, 0.0, 1.0);
+  mPopup->setOpacity(mPopupOpacity);
 }
 
 /************************************************

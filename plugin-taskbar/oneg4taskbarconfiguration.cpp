@@ -8,6 +8,8 @@
 #include "../panel/oneg4panelapplication.h"
 #include "../panel/backends/ioneg4abstractwmiface.h"
 
+#include <QSpinBox>
+
 OneG4TaskbarConfiguration::OneG4TaskbarConfiguration(PluginSettings* settings, QWidget* parent)
     : OneG4PanelPluginConfigDialog(settings, parent), ui(new Ui::OneG4TaskbarConfiguration) {
   setAttribute(Qt::WA_DeleteOnClose);
@@ -55,8 +57,22 @@ OneG4TaskbarConfiguration::OneG4TaskbarConfiguration(PluginSettings* settings, Q
   connect(ui->limitByMinimizedCB, &QAbstractButton::clicked, this, &OneG4TaskbarConfiguration::saveSettings);
   connect(ui->raiseOnCurrentDesktopCB, &QAbstractButton::clicked, this, &OneG4TaskbarConfiguration::saveSettings);
   connect(ui->buttonStyleCB, &QComboBox::activated, this, &OneG4TaskbarConfiguration::saveSettings);
-  connect(ui->buttonWidthSB, &QAbstractSpinBox::editingFinished, this, &OneG4TaskbarConfiguration::saveSettings);
-  connect(ui->buttonHeightSB, &QAbstractSpinBox::editingFinished, this, &OneG4TaskbarConfiguration::saveSettings);
+  connect(ui->buttonWidthSB,
+          static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+          this,
+          &OneG4TaskbarConfiguration::saveSettings);
+  connect(ui->buttonHeightSB,
+          static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+          this,
+          &OneG4TaskbarConfiguration::saveSettings);
+  connect(ui->buttonOpacitySB,
+          static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+          this,
+          &OneG4TaskbarConfiguration::saveSettings);
+  connect(ui->groupPopupOpacitySB,
+          static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+          this,
+          &OneG4TaskbarConfiguration::saveSettings);
   connect(ui->autoRotateCB, &QAbstractButton::clicked, this, &OneG4TaskbarConfiguration::saveSettings);
   connect(ui->middleClickCB, &QAbstractButton::clicked, this, &OneG4TaskbarConfiguration::saveSettings);
   connect(ui->groupingGB, &QGroupBox::clicked, this, [this] {
@@ -67,7 +83,9 @@ OneG4TaskbarConfiguration::OneG4TaskbarConfiguration(PluginSettings* settings, Q
   connect(ui->ungroupedNextToExistingCB, &QAbstractButton::clicked, this, &OneG4TaskbarConfiguration::saveSettings);
   connect(ui->iconByClassCB, &QAbstractButton::clicked, this, &OneG4TaskbarConfiguration::saveSettings);
   connect(ui->wheelEventsActionCB, &QComboBox::activated, this, &OneG4TaskbarConfiguration::saveSettings);
-  connect(ui->wheelDeltaThresholdSB, &QAbstractSpinBox::editingFinished, this,
+  connect(ui->wheelDeltaThresholdSB,
+          static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+          this,
           &OneG4TaskbarConfiguration::saveSettings);
   connect(ui->excludeLE, &QLineEdit::editingFinished, this, &OneG4TaskbarConfiguration::saveSettings);
 }
@@ -92,6 +110,8 @@ void OneG4TaskbarConfiguration::loadSettings() {
       ui->buttonStyleCB->findData(settings().value(QStringLiteral("buttonStyle"), QLatin1String("IconText"))));
   ui->buttonWidthSB->setValue(settings().value(QStringLiteral("buttonWidth"), 220).toInt());
   ui->buttonHeightSB->setValue(settings().value(QStringLiteral("buttonHeight"), 100).toInt());
+  ui->buttonOpacitySB->setValue(settings().value(QStringLiteral("buttonOpacity"), 10).toInt());
+  ui->groupPopupOpacitySB->setValue(settings().value(QStringLiteral("groupPopupOpacity"), 10).toInt());
   ui->groupingGB->setChecked(settings().value(QStringLiteral("groupingEnabled"), true).toBool());
   ui->showGroupOnHoverCB->setChecked(settings().value(QStringLiteral("showGroupOnHover"), true).toBool());
   ui->ungroupedNextToExistingCB->setChecked(
@@ -112,6 +132,8 @@ void OneG4TaskbarConfiguration::saveSettings() {
   settings().setValue(QStringLiteral("buttonStyle"), ui->buttonStyleCB->itemData(ui->buttonStyleCB->currentIndex()));
   settings().setValue(QStringLiteral("buttonWidth"), ui->buttonWidthSB->value());
   settings().setValue(QStringLiteral("buttonHeight"), ui->buttonHeightSB->value());
+  settings().setValue(QStringLiteral("buttonOpacity"), ui->buttonOpacitySB->value());
+  settings().setValue(QStringLiteral("groupPopupOpacity"), ui->groupPopupOpacitySB->value());
   settings().setValue(QStringLiteral("autoRotate"), ui->autoRotateCB->isChecked());
   settings().setValue(QStringLiteral("closeOnMiddleClick"), ui->middleClickCB->isChecked());
   settings().setValue(QStringLiteral("raiseOnCurrentDesktop"), ui->raiseOnCurrentDesktopCB->isChecked());
@@ -123,4 +145,5 @@ void OneG4TaskbarConfiguration::saveSettings() {
                       ui->wheelEventsActionCB->itemData(ui->wheelEventsActionCB->currentIndex()));
   settings().setValue(QStringLiteral("wheelDeltaThreshold"), ui->wheelDeltaThresholdSB->value());
   settings().setValue(QStringLiteral("excludedList"), ui->excludeLE->text());
+  settings().sync();
 }

@@ -234,21 +234,61 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="0" colspan="2">
+      <item row="3" column="0">
+       <widget class="QLabel" name="buttonOpacityL">
+        <property name="text">
+         <string>Button opacity</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QSpinBox" name="buttonOpacitySB">
+        <property name="suffix">
+         <string> %</string>
+        </property>
+        <property name="maximum">
+         <number>100</number>
+        </property>
+        <property name="value">
+         <number>10</number>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="groupPopupOpacityL">
+        <property name="text">
+         <string>Group popup opacity</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QSpinBox" name="groupPopupOpacitySB">
+        <property name="suffix">
+         <string> %</string>
+        </property>
+        <property name="maximum">
+         <number>100</number>
+        </property>
+        <property name="value">
+         <number>10</number>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0" colspan="2">
        <widget class="QCheckBox" name="autoRotateCB">
         <property name="text">
          <string>Auto&amp;rotate buttons when the panel is vertical</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="0" colspan="2">
+      <item row="6" column="0" colspan="2">
        <widget class="QCheckBox" name="iconByClassCB">
         <property name="text">
          <string>Use icons by WindowClass, if available</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="0">
+      <item row="7" column="0">
        <widget class="QLabel" name="excludeL">
         <property name="toolTip">
          <string>Comma separated list of window classes</string>
@@ -258,7 +298,7 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="1">
+      <item row="7" column="1">
        <widget class="QLineEdit" name="excludeLE">
         <property name="toolTip">
          <string>Comma separated list of window classes</string>

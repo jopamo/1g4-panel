@@ -14,6 +14,8 @@
 #include <QWheelEvent>
 #include <QFlag>
 #include <QTimer>
+#include <QSet>
+#include <algorithm>
 
 #include "../panel/ioneg4panelplugin.h"
 #include "../panel/pluginsettings.h"
@@ -50,6 +52,8 @@ OneG4TaskBar::OneG4TaskBar(IOneG4PanelPlugin* plugin, QWidget* parent)
       mIconByClass(false),
       mWheelEventsAction(1),
       mWheelDeltaThreshold(300),
+      mButtonOpacity(1.0),
+      mGroupPopupOpacity(1.0),
       mPlugin(plugin),
       mPlaceHolder(new QWidget(this)),
       mStyle(new LeftAlignedTextStyle()),
@@ -235,6 +239,8 @@ void OneG4TaskBar::addWindow(WId window) {
     });
     mLayout->addWidget(group);
     group->setToolButtonsStyle(mButtonStyle);
+    group->setButtonOpacity(mButtonOpacity);
+    group->setPopupOpacity(mGroupPopupOpacity);
 
     if (mUngroupedNextToExisting) {
       const QString window_class = mBackend->getWindowClass(window);
@@ -342,6 +348,22 @@ void OneG4TaskBar::setButtonStyle(Qt::ToolButtonStyle buttonStyle) {
 }
 
 /************************************************
+ *
+ ************************************************/
+void OneG4TaskBar::refreshOpacities() {
+  QSet<OneG4TaskGroup*> processed;
+  for (auto it = mKnownWindows.cbegin(); it != mKnownWindows.cend(); ++it) {
+    OneG4TaskGroup* group = it.value();
+    if (!group || processed.contains(group))
+      continue;
+
+    processed.insert(group);
+    group->setButtonOpacity(mButtonOpacity);
+    group->setPopupOpacity(mGroupPopupOpacity);
+  }
+}
+
+/************************************************
 
  ************************************************/
 void OneG4TaskBar::settingsChanged() {
@@ -352,6 +374,8 @@ void OneG4TaskBar::settingsChanged() {
   bool showOnlyCurrentScreenTasksOld = mShowOnlyCurrentScreenTasks;
   bool showOnlyMinimizedTasksOld = mShowOnlyMinimizedTasks;
   const bool iconByClassOld = mIconByClass;
+  const qreal buttonOpacityOld = mButtonOpacity;
+  const qreal groupPopupOpacityOld = mGroupPopupOpacity;
 
   mButtonWidth = mPlugin->settings()->value(QStringLiteral("buttonWidth"), 220).toInt();
   mButtonHeight = mPlugin->settings()->value(QStringLiteral("buttonHeight"), 100).toInt();
@@ -378,6 +402,10 @@ void OneG4TaskBar::settingsChanged() {
   mIconByClass = mPlugin->settings()->value(QStringLiteral("iconByClass"), false).toBool();
   mWheelEventsAction = mPlugin->settings()->value(QStringLiteral("wheelEventsAction"), 1).toInt();
   mWheelDeltaThreshold = mPlugin->settings()->value(QStringLiteral("wheelDeltaThreshold"), 300).toInt();
+  mButtonOpacity =
+      std::clamp(mPlugin->settings()->value(QStringLiteral("buttonOpacity"), 10).toInt(), 0, 100) / 100.0;
+  mGroupPopupOpacity =
+      std::clamp(mPlugin->settings()->value(QStringLiteral("groupPopupOpacity"), 10).toInt(), 0, 100) / 100.0;
 
   mExcludedList = mPlugin->settings()
                       ->value(QStringLiteral("excludedList"))
@@ -410,6 +438,8 @@ void OneG4TaskBar::settingsChanged() {
     emit showOnlySettingChanged();
   if (iconByClassOld != mIconByClass)
     emit iconByClassChanged();
+  if (!qFuzzyCompare(buttonOpacityOld, mButtonOpacity) || !qFuzzyCompare(groupPopupOpacityOld, mGroupPopupOpacity))
+    refreshOpacities();
 
   mBackend->reloadWindows();
   refreshPlaceholderVisibility();

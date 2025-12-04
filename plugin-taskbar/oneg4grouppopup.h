@@ -23,6 +23,7 @@ class OneG4GroupPopup : public QFrame {
 
   void hide(bool fast = false);
   void show();
+  void setOpacity(qreal opacity);
 
   // Layout
   int indexOf(OneG4TaskButton* button);
@@ -45,6 +46,7 @@ class OneG4GroupPopup : public QFrame {
  private:
   OneG4TaskGroup* mGroup;
   QTimer mCloseTimer;
+  qreal mOpacity = 1.0;
 };
 
 #endif  // ONEG4TASKPOPUP_H

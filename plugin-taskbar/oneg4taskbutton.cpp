@@ -26,6 +26,8 @@
 #include <QStyleOptionToolButton>
 #include <QScreen>
 #include <QPointer>
+#include <QGraphicsOpacityEffect>
+#include <algorithm>
 
 #include "../panel/backends/ioneg4abstractwmiface.h"
 
@@ -63,7 +65,8 @@ OneG4TaskButton::OneG4TaskButton(const WId window, OneG4TaskBar* taskbar, QWidge
       mIconSize(mPlugin->panel()->iconSize()),
       mWheelDelta(0),
       mDNDTimer(new QTimer(this)),
-      mWheelTimer(new QTimer(this)) {
+      mWheelTimer(new QTimer(this)),
+      mBasePalette(palette()) {
   Q_ASSERT(taskbar);
 
   setCheckable(true);
@@ -96,8 +99,17 @@ OneG4TaskButton::OneG4TaskButton(const WId window, OneG4TaskBar* taskbar, QWidge
 
 /************************************************
 
-************************************************/
+ ************************************************/
 OneG4TaskButton::~OneG4TaskButton() = default;
+
+/************************************************
+ *
+ ************************************************/
+void OneG4TaskButton::setOpacity(qreal opacity) {
+  mOpacity = std::clamp(opacity, 0.0, 1.0);
+
+  update();
+}
 
 /************************************************
 
@@ -136,6 +148,9 @@ void OneG4TaskButton::changeEvent(QEvent* event) {
       updateIcon();
     }
   }
+
+  if (event->type() == QEvent::PaletteChange || event->type() == QEvent::StyleChange)
+    mBasePalette = palette();
 
   QToolButton::changeEvent(event);
 }
@@ -703,10 +718,10 @@ void OneG4TaskButton::setAutoRotation(bool value, IOneG4Panel::Position position
 }
 
 void OneG4TaskButton::paintEvent(QPaintEvent* event) {
-  if (mOrigin == Qt::TopLeftCorner) {
-    QToolButton::paintEvent(event);
-    return;
-  }
+  Q_UNUSED(event);
+  QStyleOptionToolButton opt;
+  initStyleOption(&opt);
+  opt.palette = mBasePalette;
 
   QSize sz = size();
   bool transpose = false;
@@ -734,13 +749,34 @@ void OneG4TaskButton::paintEvent(QPaintEvent* event) {
       break;
   }
 
-  QStylePainter painter(this);
-  painter.setTransform(transform);
-  QStyleOptionToolButton opt;
-  initStyleOption(&opt);
   if (transpose)
     opt.rect = opt.rect.transposed();
-  painter.drawComplexControl(QStyle::CC_ToolButton, opt);
+
+  QPainter painter(this);
+  painter.setTransform(transform);
+
+  QColor base = opt.palette.color(QPalette::Button);
+  if (opt.state & QStyle::State_MouseOver)
+    base = base.lighter(110);
+  if (opt.state & (QStyle::State_On | QStyle::State_Sunken))
+    base = base.darker(105);
+  base.setAlphaF(mOpacity);
+
+  painter.setRenderHint(QPainter::Antialiasing, true);
+  painter.setPen(Qt::NoPen);
+  painter.setBrush(base);
+  painter.drawRoundedRect(opt.rect.adjusted(1, 1, -1, -1), 3, 3);
+
+  // Draw a subtle border that respects the same opacity
+  QColor border = opt.palette.color(QPalette::Mid);
+  border.setAlphaF(mOpacity);
+  painter.setPen(QPen(border, 1));
+  painter.setBrush(Qt::NoBrush);
+  painter.drawRoundedRect(opt.rect.adjusted(1, 1, -1, -1), 3, 3);
+
+  // Draw label/icon with the original palette (no opacity on text/icon)
+  opt.rect = opt.rect.adjusted(2, 2, -2, -2);
+  style()->drawControl(QStyle::CE_ToolButtonLabel, &opt, &painter, this);
 }
 
 bool OneG4TaskButton::hasDragAndDropHover() const {

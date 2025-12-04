@@ -49,6 +49,8 @@ class OneG4TaskBar : public QFrame {
   bool isIconByClass() const { return mIconByClass; }
   int wheelEventsAction() const { return mWheelEventsAction; }
   int wheelDeltaThreshold() const { return mWheelDeltaThreshold; }
+  qreal buttonOpacity() const { return mButtonOpacity; }
+  qreal groupPopupOpacity() const { return mGroupPopupOpacity; }
 
   IOneG4Panel* panel() const;
   inline IOneG4PanelPlugin* plugin() const { return mPlugin; }
@@ -111,8 +113,11 @@ class OneG4TaskBar : public QFrame {
   bool mIconByClass;
   int mWheelEventsAction;
   int mWheelDeltaThreshold;
+  qreal mButtonOpacity;
+  qreal mGroupPopupOpacity;
 
   void setButtonStyle(Qt::ToolButtonStyle buttonStyle);
+  void refreshOpacities();
 
   void wheelEvent(QWheelEvent* event);
   void changeEvent(QEvent* event);

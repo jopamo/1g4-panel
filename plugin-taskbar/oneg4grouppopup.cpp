@@ -9,9 +9,10 @@
 #include <QDrag>
 #include <QMimeData>
 #include <QLayout>
+#include <QDebug>
 #include <QPainter>
 #include <QStyleOption>
-#include <QDebug>
+#include <algorithm>
 
 /************************************************
     this class is just a container of window buttons
@@ -107,9 +108,21 @@ void OneG4GroupPopup::enterEvent(QEnterEvent* /*event*/) {
 
 void OneG4GroupPopup::paintEvent(QPaintEvent* /*event*/) {
   QPainter p(this);
-  QStyleOption opt;
-  opt.initFrom(this);
-  style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+  p.setRenderHint(QPainter::Antialiasing, true);
+
+  QRect r = rect().adjusted(1, 1, -1, -1);
+  QColor base = palette().color(QPalette::Window);
+  base.setAlphaF(mOpacity);
+  QColor border = palette().color(QPalette::Mid);
+  border.setAlphaF(mOpacity);
+
+  p.setPen(Qt::NoPen);
+  p.setBrush(base);
+  p.drawRoundedRect(r, 4, 4);
+
+  p.setPen(QPen(border, 1));
+  p.setBrush(Qt::NoBrush);
+  p.drawRoundedRect(r, 4, 4);
 }
 
 void OneG4GroupPopup::hide(bool fast) {
@@ -122,6 +135,14 @@ void OneG4GroupPopup::hide(bool fast) {
 void OneG4GroupPopup::show() {
   mCloseTimer.stop();
   QFrame::show();
+}
+
+/************************************************
+ *
+ ************************************************/
+void OneG4GroupPopup::setOpacity(qreal opacity) {
+  mOpacity = std::clamp(opacity, 0.0, 1.0);
+  update();
 }
 
 int OneG4GroupPopup::indexOf(OneG4TaskButton* button) {

@@ -7,6 +7,7 @@
 
 #include "../oneg4panellimits.h"
 
+#include <KX11Extras>
 #include <KWindowSystem>
 #include <QDebug>
 #include <QListView>
@@ -43,6 +44,10 @@ ConfigStyling::ConfigStyling(OneG4Panel* panel, QWidget* parent)
   connect(ui->slider_opacity, &QSlider::valueChanged, this, &ConfigStyling::editChanged);
   connect(ui->groupBox_icon, &QGroupBox::clicked, this, &ConfigStyling::editChanged);
   connect(ui->comboBox_icon, &QComboBox::activated, this, &ConfigStyling::editChanged);
+  connect(ui->checkBox_customBgColor, &QCheckBox::toggled, this, &ConfigStyling::updateCompositingWarning);
+
+  if (KWindowSystem::isPlatformX11())
+    connect(KX11Extras::self(), &KX11Extras::compositingChanged, this, &ConfigStyling::updateCompositingWarning);
 }
 
 /************************************************
@@ -59,6 +64,22 @@ void ConfigStyling::reset() {
   ui->checkBox_customFontColor->setChecked(mOldFontColor.isValid());
   ui->checkBox_customBgColor->setChecked(mOldBackgroundColor.isValid());
   ui->checkBox_customBgImage->setChecked(QFileInfo::exists(mOldBackgroundImage));
+
+  updateCompositingWarning();
+}
+
+/************************************************
+ *
+ ************************************************/
+void ConfigStyling::updateCompositingWarning() {
+  // On Wayland compositing is always present; on X11 it may be disabled.
+  bool compositingActive = true;
+  if (KWindowSystem::isPlatformX11())
+    compositingActive = KX11Extras::compositingActive();
+  const bool showWarning = !compositingActive;
+
+  ui->compositingL->setVisible(showWarning);
+  ui->compositingL->setEnabled(showWarning && ui->checkBox_customBgColor->isChecked());
 }
 
 /************************************************

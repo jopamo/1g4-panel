@@ -36,6 +36,7 @@ class ConfigStyling : public QWidget {
   void pickFontColor();
   void pickBackgroundColor();
   void pickBackgroundImage();
+  void updateCompositingWarning();
 
  private:
   Ui::ConfigStyling* ui;

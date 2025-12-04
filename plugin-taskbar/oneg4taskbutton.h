@@ -77,6 +77,7 @@ class OneG4TaskButton : public QToolButton {
   void setOrigin(Qt::Corner);
 
   void updateIcon();
+  void setOpacity(qreal opacity);
 
  protected:
   virtual void changeEvent(QEvent* event);
@@ -123,6 +124,8 @@ class OneG4TaskButton : public QToolButton {
 
   // Timer for distinguishing between separate mouse wheel rotations
   QTimer* mWheelTimer;
+  qreal mOpacity = 1.0;
+  QPalette mBasePalette;
 
  signals:
   void dropped(QObject* dragSource, QPoint const& pos);
