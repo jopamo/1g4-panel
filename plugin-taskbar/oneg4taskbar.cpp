@@ -403,9 +403,9 @@ void OneG4TaskBar::settingsChanged() {
   mWheelEventsAction = mPlugin->settings()->value(QStringLiteral("wheelEventsAction"), 1).toInt();
   mWheelDeltaThreshold = mPlugin->settings()->value(QStringLiteral("wheelDeltaThreshold"), 300).toInt();
   mButtonOpacity =
-      std::clamp(mPlugin->settings()->value(QStringLiteral("buttonOpacity"), 10).toInt(), 0, 100) / 100.0;
+      std::clamp(mPlugin->settings()->value(QStringLiteral("buttonOpacity"), 40).toInt(), 0, 100) / 100.0;
   mGroupPopupOpacity =
-      std::clamp(mPlugin->settings()->value(QStringLiteral("groupPopupOpacity"), 10).toInt(), 0, 100) / 100.0;
+      std::clamp(mPlugin->settings()->value(QStringLiteral("groupPopupOpacity"), 60).toInt(), 0, 100) / 100.0;
 
   mExcludedList = mPlugin->settings()
                       ->value(QStringLiteral("excludedList"))

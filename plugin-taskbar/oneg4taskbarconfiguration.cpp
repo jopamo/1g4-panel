@@ -110,8 +110,8 @@ void OneG4TaskbarConfiguration::loadSettings() {
       ui->buttonStyleCB->findData(settings().value(QStringLiteral("buttonStyle"), QLatin1String("IconText"))));
   ui->buttonWidthSB->setValue(settings().value(QStringLiteral("buttonWidth"), 220).toInt());
   ui->buttonHeightSB->setValue(settings().value(QStringLiteral("buttonHeight"), 100).toInt());
-  ui->buttonOpacitySB->setValue(settings().value(QStringLiteral("buttonOpacity"), 10).toInt());
-  ui->groupPopupOpacitySB->setValue(settings().value(QStringLiteral("groupPopupOpacity"), 10).toInt());
+  ui->buttonOpacitySB->setValue(settings().value(QStringLiteral("buttonOpacity"), 40).toInt());
+  ui->groupPopupOpacitySB->setValue(settings().value(QStringLiteral("groupPopupOpacity"), 60).toInt());
   ui->groupingGB->setChecked(settings().value(QStringLiteral("groupingEnabled"), true).toBool());
   ui->showGroupOnHoverCB->setChecked(settings().value(QStringLiteral("showGroupOnHover"), true).toBool());
   ui->ungroupedNextToExistingCB->setChecked(
