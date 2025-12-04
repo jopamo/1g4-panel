@@ -86,11 +86,12 @@ class MainWindow : public QDialog, public Ui::MainWindow {
 
   QByteArray defaultSinkName, defaultSourceName;
 
-  bool canRenameDevices;
+ bool canRenameDevices;
 
- private:
+private:
   gboolean m_connected;
   gchar* m_config_filename;
+  bool m_visibilityUpdateScheduled;
 };
 
 #endif

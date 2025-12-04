@@ -18,6 +18,7 @@
 #include <QIcon>
 #include <QStyle>
 #include <QSettings>
+#include <QTimer>
 
 /* Used for profile sorting */
 struct profile_prio_compare {
@@ -56,7 +57,8 @@ MainWindow::MainWindow()
       eventRoleWidget(nullptr),
       canRenameDevices(false),
       m_connected(false),
-      m_config_filename(nullptr) {
+      m_config_filename(nullptr),
+      m_visibilityUpdateScheduled(false) {
   setupUi(this);
 
   sinkInputTypeComboBox->setCurrentIndex((int)showSinkInputType);
@@ -855,14 +857,6 @@ void MainWindow::updateVolumeMeter(uint32_t source_index, uint32_t sink_input_id
   }
 }
 
-static guint idle_source = 0;
-
-gboolean idle_cb(gpointer data) {
-  ((MainWindow*)data)->reallyUpdateDeviceVisibility();
-  idle_source = 0;
-  return FALSE;
-}
-
 void MainWindow::setConnectionState(gboolean connected) {
   if (m_connected != connected) {
     m_connected = connected;
@@ -878,13 +872,15 @@ void MainWindow::setConnectionState(gboolean connected) {
 }
 
 void MainWindow::updateDeviceVisibility() {
-  if (idle_source)
+  if (m_visibilityUpdateScheduled)
     return;
 
-  idle_source = g_idle_add(idle_cb, this);
+  m_visibilityUpdateScheduled = true;
+  QTimer::singleShot(0, this, &MainWindow::reallyUpdateDeviceVisibility);
 }
 
 void MainWindow::reallyUpdateDeviceVisibility() {
+  m_visibilityUpdateScheduled = false;
   bool is_empty = true;
 
   for (auto& sinkInputWidget : sinkInputWidgets) {
